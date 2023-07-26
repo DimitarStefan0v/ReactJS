@@ -14,13 +14,21 @@ function App() {
 
     useEffect(() => {
         userService.getAll()
-            .then(users => {
-                setUsers(users);
-            })
+            .then(setUsers)
             .catch(err => {
                 console.log('Error: ' + err);
             });
-    });
+    }, []);
+
+    const onUserCreateSubmit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData);
+
+        const createdUser = await userService.create(data);
+        setUsers(state => [...state, createdUser]);
+    };
 
     return (
         <>
@@ -29,10 +37,8 @@ function App() {
             <main className="main">
                 <section className="card users-container">
                     <Search />
-                    <UserList users={users} />
+                    <UserList users={users} onUserCreateSubmit={onUserCreateSubmit} />
 
-                    <button class="btn-add btn">Add new user</button>
-                    
                 </section>
             </main>
 
