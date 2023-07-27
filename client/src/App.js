@@ -30,6 +30,17 @@ function App() {
         setUsers(state => [...state, createdUser]);
     };
 
+    const onUserUpdateSubmit = async (e, userId) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData);
+
+        const updatedUser = await userService.update(userId, data);
+
+        setUsers(state => state.map(x => x._id === userId ? updatedUser : x));
+    };
+
     const onUserDelete = async (userId) => {
         await userService.remove(userId);
 
@@ -46,6 +57,7 @@ function App() {
                     <UserList
                         users={users}
                         onUserCreateSubmit={onUserCreateSubmit}
+                        onUserUpdateSubmit={onUserUpdateSubmit}
                         onUserDelete={onUserDelete}
                     />
 

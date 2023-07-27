@@ -10,6 +10,7 @@ import { UserDelete } from './UserDelete';
 export const UserList = ({
     users,
     onUserCreateSubmit,
+    onUserUpdateSubmit,
     onUserDelete,
 }) => {
     const [selectedUser, setSelectedUser] = useState(null);
@@ -27,6 +28,7 @@ export const UserList = ({
         setSelectedUser(null);
         setShowAddUser(false);
         setShowDeleteUser(null);
+        setShowEditUser(null);
     };
 
     const onUserAddClick = () => {
@@ -38,6 +40,11 @@ export const UserList = ({
         setShowAddUser(false);
     };
 
+    const onUserUpdateSubmitHandler = (e, userId) => {
+        onUserUpdateSubmit(e, userId);
+        setShowEditUser(null);
+    };
+
     const onDeleteClick = (userId) => {
         setShowDeleteUser(userId);
     };
@@ -47,11 +54,18 @@ export const UserList = ({
         onClose();
     };
 
+    const onEditClick = async (userId) => {
+        const user = await userService.getById(userId);
+
+        setShowEditUser(user);
+    };  
+
     return (
         <>
             {selectedUser && <UserDetails {...selectedUser} onClose={onClose} />}
             {showAddUser && <UserCreate onClose={onClose} onUserCreateSubmit={onUserCreateSubmitHandler} />}
             {showDeleteUser && <UserDelete onClose={onClose} onDelete={onDeleteHandler} />}
+            {showEditUser && <UserCreate user={showEditUser} onClose={onClose} onUserCreateSubmit={onUserUpdateSubmitHandler} />}
             <div className="table-wrapper">
 
                 {/* <div className="loading-shade">
@@ -177,6 +191,7 @@ export const UserList = ({
                                 key={u._id}
                                 onInfoClick={onInfoClick}
                                 onDeleteClick={onDeleteClick}
+                                onEditClick={onEditClick}
                             />
                         )}
                     </tbody>
