@@ -5,12 +5,16 @@ import * as userService from '../services/userService';
 import { User } from './User';
 import { UserDetails } from './UserDetails';
 import { UserCreate } from './UserCreate';
+import { UserDelete } from './UserDelete';
 
 export const UserList = ({
     users,
-    onUserCreateSubmit
+    onUserCreateSubmit,
+    onUserDelete,
 }) => {
     const [selectedUser, setSelectedUser] = useState(null);
+    const [showDeleteUser, setShowDeleteUser] = useState(null);
+    const [showEditUser, setShowEditUser] = useState(null);
     const [showAddUser, setShowAddUser] = useState(false);
 
     const onInfoClick = async (userId) => {
@@ -22,6 +26,7 @@ export const UserList = ({
     const onClose = () => {
         setSelectedUser(null);
         setShowAddUser(false);
+        setShowDeleteUser(null);
     };
 
     const onUserAddClick = () => {
@@ -33,10 +38,20 @@ export const UserList = ({
         setShowAddUser(false);
     };
 
+    const onDeleteClick = (userId) => {
+        setShowDeleteUser(userId);
+    };
+
+    const onDeleteHandler = () => {
+        onUserDelete(showDeleteUser);
+        onClose();
+    };
+
     return (
         <>
             {selectedUser && <UserDetails {...selectedUser} onClose={onClose} />}
             {showAddUser && <UserCreate onClose={onClose} onUserCreateSubmit={onUserCreateSubmitHandler} />}
+            {showDeleteUser && <UserDelete onClose={onClose} onDelete={onDeleteHandler} />}
             <div className="table-wrapper">
 
                 {/* <div className="loading-shade">
@@ -156,7 +171,14 @@ export const UserList = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map(u => <User key={u._id} {...u} onInfoClick={onInfoClick} />)}
+                        {users.map(u =>
+                            <User
+                                {...u}
+                                key={u._id}
+                                onInfoClick={onInfoClick}
+                                onDeleteClick={onDeleteClick}
+                            />
+                        )}
                     </tbody>
                 </table>
             </div>

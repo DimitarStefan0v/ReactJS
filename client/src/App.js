@@ -10,7 +10,7 @@ import { UserList } from './components/UserList';
 import './App.css';
 
 function App() {
-    const [users, setUsers] = useState([]); 
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
         userService.getAll()
@@ -30,6 +30,12 @@ function App() {
         setUsers(state => [...state, createdUser]);
     };
 
+    const onUserDelete = async (userId) => {
+        await userService.remove(userId);
+
+        setUsers(state => state.filter(x => x._id !== userId));
+    };
+
     return (
         <>
             <Header />
@@ -37,7 +43,11 @@ function App() {
             <main className="main">
                 <section className="card users-container">
                     <Search />
-                    <UserList users={users} onUserCreateSubmit={onUserCreateSubmit} />
+                    <UserList
+                        users={users}
+                        onUserCreateSubmit={onUserCreateSubmit}
+                        onUserDelete={onUserDelete}
+                    />
 
                 </section>
             </main>
