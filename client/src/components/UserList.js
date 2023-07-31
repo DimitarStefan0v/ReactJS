@@ -12,6 +12,10 @@ export const UserList = ({
     onUserCreateSubmit,
     onUserUpdateSubmit,
     onUserDelete,
+    formValues,
+    formChangeHandler,
+    formErrors,
+    formValidate,
 }) => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [showDeleteUser, setShowDeleteUser] = useState(null);
@@ -58,14 +62,38 @@ export const UserList = ({
         const user = await userService.getById(userId);
 
         setShowEditUser(user);
-    };  
+    };
 
     return (
         <>
             {selectedUser && <UserDetails {...selectedUser} onClose={onClose} />}
-            {showAddUser && <UserCreate onClose={onClose} onUserCreateSubmit={onUserCreateSubmitHandler} />}
-            {showDeleteUser && <UserDelete onClose={onClose} onDelete={onDeleteHandler} />}
-            {showEditUser && <UserCreate user={showEditUser} onClose={onClose} onUserCreateSubmit={onUserUpdateSubmitHandler} />}
+            {showAddUser &&
+                <UserCreate
+                    onClose={onClose}
+                    onUserCreateSubmit={onUserCreateSubmitHandler}
+                    formValues={formValues}
+                    formChangeHandler={formChangeHandler}
+                    formErrors={formErrors}
+                    formValidate={formValidate}
+                />
+            }
+            {showDeleteUser &&
+                <UserDelete
+                    onClose={onClose}
+                    onDelete={onDeleteHandler}
+                />
+            }
+            {showEditUser &&
+                <UserCreate
+                    user={showEditUser}
+                    onClose={onClose}
+                    onUserCreateSubmit={onUserUpdateSubmitHandler}
+                    formValues={formValues}
+                    formChangeHandler={formChangeHandler}
+                    formErrors={formErrors}
+                    formValidate={formValidate}
+                />
+            }
             <div className="table-wrapper">
 
                 {/* <div className="loading-shade">

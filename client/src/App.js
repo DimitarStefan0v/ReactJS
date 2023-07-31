@@ -11,6 +11,22 @@ import './App.css';
 
 function App() {
     const [users, setUsers] = useState([]);
+    const [formValues, setFormValues] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        imageUrl: '',
+        // country: '',
+        // city: '',
+        // street: '',
+        // streetNumber: '',
+    });
+
+    const [formErrors, setFormErrors] = useState({
+        firstName: '',
+        lastName: '',
+    });
 
     useEffect(() => {
         userService.getAll()
@@ -47,6 +63,25 @@ function App() {
         setUsers(state => state.filter(x => x._id !== userId));
     };
 
+    const formChangeHandler = (e) => {
+        setFormValues(state => ({...state, [e.target.name]: e.target.value}));
+    };
+
+    const formValidate = (e) => {
+        const value = e.target.value;
+        const errors = {};
+
+        if (e.target.name === 'firstName' && (value.length < 3 || value.length > 20)) {
+            errors.firstName = 'First name should be between 3 and 20 characters';
+        }
+
+        if (e.target.name === 'lastName' && (value.length < 3 || value.length > 20)) {
+            errors.lastName = 'Last name should be between 3 and 20 characters';
+        }
+
+        setFormErrors(errors);
+    };
+
     return (
         <>
             <Header />
@@ -59,6 +94,10 @@ function App() {
                         onUserCreateSubmit={onUserCreateSubmit}
                         onUserUpdateSubmit={onUserUpdateSubmit}
                         onUserDelete={onUserDelete}
+                        formValues={formValues}
+                        formChangeHandler={formChangeHandler}
+                        formErrors={formErrors}
+                        formValidate={formValidate}
                     />
 
                 </section>

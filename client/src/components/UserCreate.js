@@ -2,6 +2,10 @@ export const UserCreate = ({
     user,
     onClose,
     onUserCreateSubmit,
+    formValues,
+    formChangeHandler,
+    formErrors,
+    formValidate,
 }) => {
     return (
         <div className="overlay">
@@ -26,21 +30,25 @@ export const UserCreate = ({
                                 <label htmlFor="firstName">First name</label>
                                 <div className="input-wrapper">
                                     <span><i className="fa-solid fa-user"></i></span>
-                                    <input id="firstName" name="firstName" type="text" defaultValue={user?.firstName} />
+                                    <input id="firstName" name="firstName" type="text" value={formValues.firstName} onChange={formChangeHandler} onBlur={formValidate} />
                                 </div>
-                                <p className="form-error">
-                                    First name should be at least 3 characters long!
-                                </p>
+                                {formErrors.firstName &&
+                                    <p className="form-error">
+                                        {formErrors.firstName}
+                                    </p>
+                                }
                             </div>
                             <div className="form-group">
                                 <label htmlFor="lastName">Last name</label>
                                 <div className="input-wrapper">
                                     <span><i className="fa-solid fa-user"></i></span>
-                                    <input id="lastName" name="lastName" type="text" defaultValue={user?.lastName} />
+                                    <input id="lastName" name="lastName" type="text" value={formValues.lastName} onChange={formChangeHandler} onBlur={formValidate} />
                                 </div>
-                                <p className="form-error">
-                                    Last name should be at least 3 characters long!
-                                </p>
+                                {formErrors.lastName &&
+                                    <p className="form-error">
+                                        {formErrors.lastName}
+                                    </p>
+                                }
                             </div>
                         </div>
 
@@ -49,7 +57,7 @@ export const UserCreate = ({
                                 <label htmlFor="email">Email</label>
                                 <div className="input-wrapper">
                                     <span><i className="fa-solid fa-envelope"></i></span>
-                                    <input id="email" name="email" type="text" defaultValue={user?.email} />
+                                    <input id="email" name="email" type="text" value={formValues.email} onChange={formChangeHandler} />
                                 </div>
                                 <p className="form-error">Email is not valid!</p>
                             </div>
@@ -57,7 +65,7 @@ export const UserCreate = ({
                                 <label htmlFor="phoneNumber">Phone number</label>
                                 <div className="input-wrapper">
                                     <span><i className="fa-solid fa-phone"></i></span>
-                                    <input id="phoneNumber" name="phoneNumber" type="text" defaultValue={user?.phoneNumber} />
+                                    <input id="phoneNumber" name="phoneNumber" type="text" value={formValues.phoneNumber} onChange={formChangeHandler} />
                                 </div>
                                 <p className="form-error">Phone number is not valid!</p>
                             </div>
@@ -67,10 +75,12 @@ export const UserCreate = ({
                             <label htmlFor="imageUrl">Image Url</label>
                             <div className="input-wrapper">
                                 <span><i className="fa-solid fa-image"></i></span>
-                                <input id="imageUrl" name="imageUrl" type="text" defaultValue={user?.imageUrl} />
+                                <input id="imageUrl" name="imageUrl" type="text" value={formValues.imageUrl} onChange={formChangeHandler} />
                             </div>
                             <p className="form-error">ImageUrl is not valid!</p>
                         </div>
+
+                        {/* TODO: make the rest of the form controlled */}
 
                         <div className="form-row">
                             <div className="form-group">
