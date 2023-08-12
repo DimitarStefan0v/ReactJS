@@ -9,6 +9,7 @@ import { Login } from './components/Login/Login';
 import { Register } from './components/Register/Register';
 import { CreateGame } from './components/CreateGame/CreateGame';
 import { Catalog } from './components/Catalog/Catalog';
+import { GameDetails } from './components/GameDetails/GameDetails';
 
 function App() {
     const [games, setGames] = useState([]);
@@ -35,11 +36,12 @@ function App() {
 
             <main id="main-content">
                 <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/create-game" element={<CreateGame onCreateGameSubmit={onCreateGameSubmit} />} />
-                    <Route path="/catalog" element={<Catalog games={games} />} />
+                    <Route path='/' element={<Home />} />
+                    <Route path='/login' element={<Login />} />
+                    <Route path='/register' element={<Register />} />
+                    <Route path='/create-game' element={<CreateGame onCreateGameSubmit={onCreateGameSubmit} />} />
+                    <Route path='/catalog' element={<Catalog games={games} />} />
+                    <Route path='/catalog/:gameId' element={<GameDetails />} />
                 </Routes>
             </main>
         </div>
