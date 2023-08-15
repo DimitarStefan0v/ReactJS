@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
 import * as gameService from './services/gameService';
+import * as authService from './services/authService';
 import { AuthContext } from './contexts/authContext';
 
 import { Header } from './components/Header/Header';
@@ -33,11 +34,27 @@ function App() {
     };
 
     const onLoginSubmit = async (data) => {
-        console.log(data);
+        try {
+            const result = await authService.login(data);
+
+            setAuth(result);
+
+            navigate('/');
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
+
+    const context = {
+        onLoginSubmit,
+        userId: auth._id,
+        token: auth.accessToken,
+        userEmail: auth.email,
+        isAuthenticated: !!auth.accessToken,
     };
 
     return (
-        <AuthContext.Provider value={{onLoginSubmit}}>
+        <AuthContext.Provider value={context}>
             <div id="box">
                 <Header />
 
