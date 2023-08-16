@@ -45,8 +45,27 @@ function App() {
         }
     };
 
+    const onRegisterSubmit = async (values) => {
+        const { confirmPassword, ...registerData} = values;
+        if (confirmPassword !== registerData.password) {
+            console.log('Password and confirm password don\'t match');
+            return;
+        }
+
+        try {
+            const result = await authService.register(registerData);
+
+            setAuth(result);
+
+            navigate('/');
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
+
     const context = {
         onLoginSubmit,
+        onRegisterSubmit,
         userId: auth._id,
         token: auth.accessToken,
         userEmail: auth.email,
