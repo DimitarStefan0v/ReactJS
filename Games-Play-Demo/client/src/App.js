@@ -4,9 +4,8 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useService } from './hooks/useService';
 
 import { gameServiceFactory } from './services/gameService';
-import { authServiceFactory } from './services/authService';
 
-import { AuthContext } from './contexts/authContext';
+import { AuthProvider } from './contexts/authContext';
 
 import { Header } from './components/Header/Header';
 import { Home } from './components/Home/Home';
@@ -21,9 +20,7 @@ import { EditGame } from './components/EditGame/EditGame';
 function App() {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
-    const [auth, setAuth] = useState({});
-    const gameService = gameServiceFactory(auth.accessToken);
-    const authService = authServiceFactory(auth.accessToken);
+    const gameService = gameServiceFactory(); //auth.accessToken
 
     useEffect(() => {
         gameService.getAll()
@@ -40,45 +37,6 @@ function App() {
         navigate('/catalog');
     };
 
-    const onLoginSubmit = async (data) => {
-        try {
-            const result = await authService.login(data);
-
-            setAuth(result);
-
-            navigate('/');
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
-
-    const onRegisterSubmit = async (values) => {
-        const { confirmPassword, ...registerData } = values;
-        if (confirmPassword !== registerData.password) {
-            console.log('Password and confirm password don\'t match');
-            return;
-        }
-
-        try {
-            const result = await authService.register(registerData);
-
-            setAuth(result);
-
-            navigate('/');
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
-
-    const onLogout = async () => {
-        // TODO: authorized request
-        // await authService.logout();
-
-        setAuth({});
-
-        navigate('/');
-    };
-
     const onGameEditSubmit = async (values) => {
         const result = await gameService.edit(values._id, values);
 
@@ -87,18 +45,8 @@ function App() {
         navigate(`/catalog/${values._id}`);
     };
 
-    const contextValues = {
-        onLoginSubmit,
-        onRegisterSubmit,
-        onLogout,
-        userId: auth._id,
-        token: auth.accessToken,
-        userEmail: auth.email,
-        isAuthenticated: !!auth.accessToken,
-    };
-
     return (
-        <AuthContext.Provider value={contextValues}>
+        <AuthProvider>
             <div id="box">
                 <Header />
 
@@ -115,7 +63,7 @@ function App() {
                     </Routes>
                 </main>
             </div>
-        </AuthContext.Provider>
+        </AuthProvider>
     );
 }
 
