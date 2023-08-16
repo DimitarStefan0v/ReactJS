@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
-import * as gameService from './services/gameService';
-import * as authService from './services/authService';
+import { useService } from './hooks/useService';
+
+import { gameServiceFactory } from './services/gameService';
+import { authServiceFactory } from './services/authService';
+
 import { AuthContext } from './contexts/authContext';
 
 import { Header } from './components/Header/Header';
@@ -13,11 +16,14 @@ import { Logout } from './components/Logout/Logout';
 import { CreateGame } from './components/CreateGame/CreateGame';
 import { Catalog } from './components/Catalog/Catalog';
 import { GameDetails } from './components/GameDetails/GameDetails';
+import { EditGame } from './components/EditGame/EditGame';
 
 function App() {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [auth, setAuth] = useState({});
+    const gameService = gameServiceFactory(auth.accessToken);
+    const authService = authServiceFactory(auth.accessToken);
 
     useEffect(() => {
         gameService.getAll()
@@ -47,7 +53,7 @@ function App() {
     };
 
     const onRegisterSubmit = async (values) => {
-        const { confirmPassword, ...registerData} = values;
+        const { confirmPassword, ...registerData } = values;
         if (confirmPassword !== registerData.password) {
             console.log('Password and confirm password don\'t match');
             return;
@@ -71,6 +77,14 @@ function App() {
         setAuth({});
 
         navigate('/');
+    };
+
+    const onGameEditSubmit = async (values) => {
+        const result = await gameService.edit(values._id, values);
+
+        setGames(state => state.map(x => x._id === values._id ? result : x));
+
+        navigate(`/catalog/${values._id}`);
     };
 
     const contextValues = {
@@ -97,6 +111,7 @@ function App() {
                         <Route path='/create-game' element={<CreateGame onCreateGameSubmit={onCreateGameSubmit} />} />
                         <Route path='/catalog' element={<Catalog games={games} />} />
                         <Route path='/catalog/:gameId' element={<GameDetails />} />
+                        <Route path='/catalog/:gameId/edit' element={<EditGame onGameEditSubmit={onGameEditSubmit} />} />
                     </Routes>
                 </main>
             </div>

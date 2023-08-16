@@ -1,39 +1,37 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState, useContext } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 
-import * as gameService from '../../services/gameService';
-import * as commentService from '../../services/commentService';
+import { useService } from '../../hooks/useService';
+
+import { AuthContext } from '../../contexts/authContext';
+
+import { gameServiceFactory } from '../../services/gameService';
 
 export const GameDetails = () => {
-    const { gameId } = useParams();
-    const [game, setGame] = useState({});
+    const { userId } = useContext(AuthContext);
     const [username, setUsername] = useState('');
     const [comment, setComment] = useState('');
-    const [comments, setComments] = useState([]);
+    const { gameId } = useParams();
+    const [game, setGame] = useState({});
+    const gameService = useService(gameServiceFactory);
+    const navigate = useNavigate();
 
     useEffect(() => {
         gameService.getOne(gameId)
             .then(result => {
                 setGame(result);
-                return commentService.getAll(gameId);
             })
-            .then(result => {
-                setComments(result);
-            });
     }, [gameId]);
 
     const onCommentSubmit = async (e) => {
         e.preventDefault();
 
-        const newComment = await commentService.create({
-            gameId,
+        const result = await gameService.addComment(gameId, {
             username,
             comment,
         });
 
-        console.log(newComment);
-        //TODO: add comment to state
-        //setGame(state => ({...state, comments}));
+        setGame(state => ({ ...state, comments: { ...state.comments, [result._id]: result } }));
         setUsername('');
         setComment('');
     };
@@ -44,6 +42,16 @@ export const GameDetails = () => {
 
     const onCommentChange = (e) => {
         setComment(e.target.value);
+    };
+
+    const isOwner = game._ownerId === userId;
+
+    const onDeleteClick = async () => {
+        await gameService.delete(game._id);
+
+        // TODO: delete from state
+
+        navigate('/catalog');
     };
 
     return (
@@ -63,20 +71,22 @@ export const GameDetails = () => {
                 <div className="details-comments">
                     <h2>Comments:</h2>
                     <ul>
-                        {comments.map(x => (
+                        {game.comments && Object.values(game.comments).map(x => (
                             <li key={x._id} className="comment">
                                 <p>{x.username}: {x.comment}</p>
                             </li>
                         ))}
                     </ul>
 
-                    {comments.length === 0 && (<p className="no-comment">No comments.</p>)}
+                    {/* {game.comments.length === 0 && (<p className="no-comment">No comments.</p>)} */}
                 </div>
 
-                <div className="buttons">
-                    <a href="#" className="button">Edit</a>
-                    <a href="#" className="button">Delete</a>
-                </div>
+                {isOwner && (
+                    <div className="buttons">
+                        <Link to={`/catalog/${gameId}/edit`} className="button">Edit</Link>
+                        <button className="button" onClick={onDeleteClick}>Delete</button>
+                    </div>
+                )}
             </div>
 
             <article className="create-comment">
