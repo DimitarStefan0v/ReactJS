@@ -6,42 +6,30 @@ import { useService } from '../../hooks/useService';
 import { AuthContext } from '../../contexts/authContext';
 
 import { gameServiceFactory } from '../../services/gameService';
+import * as commentService from '../../services/commentService';
+
+import { AddComment } from './AddComment/AddComment';
 
 export const GameDetails = () => {
-    const { userId } = useContext(AuthContext);
-    const [username, setUsername] = useState('');
-    const [comment, setComment] = useState('');
     const { gameId } = useParams();
+    const { userId, isAuthenticated } = useContext(AuthContext);
     const [game, setGame] = useState({});
     const gameService = useService(gameServiceFactory);
     const navigate = useNavigate();
 
     useEffect(() => {
+        
         gameService.getOne(gameId)
             .then(result => {
                 setGame(result);
             })
     }, [gameId]);
 
-    const onCommentSubmit = async (e) => {
-        e.preventDefault();
-
-        // const result = await gameService.addComment(gameId, {
-        //     username,
-        //     comment,
-        // });
-
+    const onCommentSubmit = async (values) => {
+        console.log(values);
+        const response = await commentService.create(gameId, values.comment);
+        console.log(response);
         // setGame(state => ({ ...state, comments: { ...state.comments, [result._id]: result } }));
-        // setUsername('');
-        // setComment('');
-    };
-
-    const onUsernameChange = (e) => {
-        setUsername(e.target.value);
-    };
-
-    const onCommentChange = (e) => {
-        setComment(e.target.value);
     };
 
     const isOwner = game._ownerId === userId;
@@ -89,15 +77,7 @@ export const GameDetails = () => {
                 )}
             </div>
 
-            <article className="create-comment">
-                <label>Add new comment:</label>
-                <form className="form" onSubmit={onCommentSubmit}>
-                    <input type="text" name="username" placeholder="Your username..." value={username} onChange={onUsernameChange} />
-                    <textarea name="comment" placeholder="Comment......" value={comment} onChange={onCommentChange}></textarea>
-                    <input className="btn submit" type="submit" value="Add Comment" />
-                </form>
-            </article>
-
+            {isAuthenticated && <AddComment onCommentSubmit={onCommentSubmit} />}
         </section>
     );
 };
