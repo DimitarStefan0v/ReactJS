@@ -12,7 +12,7 @@ import { AddComment } from './AddComment/AddComment';
 
 export const GameDetails = () => {
     const { gameId } = useParams();
-    const { userId, isAuthenticated } = useContext(AuthContext);
+    const { userId, isAuthenticated, userEmail } = useContext(AuthContext);
     const [game, setGame] = useState({});
     const gameService = useService(gameServiceFactory);
     const navigate = useNavigate();
@@ -36,7 +36,15 @@ export const GameDetails = () => {
 
         setGame(state => ({
             ...state,
-            comments: [...state.comments, response],
+            comments: [
+                ...state.comments, 
+                {
+                    ...response,
+                    author: {
+                        email: userEmail,
+                    }
+                }
+            ],
         }));
         // setGame(state => ({ ...state, comments: { ...state.comments, [result._id]: result } }));
     };
@@ -70,12 +78,12 @@ export const GameDetails = () => {
                     <ul>
                         {game.comments && game.comments.map(x => (
                             <li key={x._id} className="comment">
-                                <p>{x.comment}</p>
+                                <p>{x.author.email}: {x.comment}</p>
                             </li>
                         ))}
                     </ul>
 
-                    {/* {game.comments.length === 0 && (<p className="no-comment">No comments.</p>)} */}
+                    {!game.comments?.length && (<p className="no-comment">No comments.</p>)}
                 </div>
 
                 {isOwner && (
