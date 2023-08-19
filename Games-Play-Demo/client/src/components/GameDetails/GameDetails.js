@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useContext, useReducer } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import { useService } from '../../hooks/useService';
@@ -8,12 +8,15 @@ import { AuthContext } from '../../contexts/authContext';
 import { gameServiceFactory } from '../../services/gameService';
 import * as commentService from '../../services/commentService';
 
+import { gameReducer } from '../../reducers/gameReducer';
+
 import { AddComment } from './AddComment/AddComment';
+
 
 export const GameDetails = () => {
     const { gameId } = useParams();
     const { userId, isAuthenticated, userEmail } = useContext(AuthContext);
-    const [game, setGame] = useState({});
+    const [game, dispatch] = useReducer(gameReducer, {});
     const gameService = useService(gameServiceFactory);
     const navigate = useNavigate();
 
@@ -23,10 +26,12 @@ export const GameDetails = () => {
             commentService.getAll(gameId),
         ])
             .then(([gameData, commentsData]) => {
-                setGame({
+                const gameState = {
                     ...gameData,
                     comments: commentsData
-                });
+                };
+
+                dispatch({ type: 'GAME_FETCH', payload: gameState });
             });
     }, [gameId]);
 
@@ -34,19 +39,11 @@ export const GameDetails = () => {
         const response = await commentService.create(gameId, values.comment);
         console.log(response);
 
-        setGame(state => ({
-            ...state,
-            comments: [
-                ...state.comments, 
-                {
-                    ...response,
-                    author: {
-                        email: userEmail,
-                    }
-                }
-            ],
-        }));
-        // setGame(state => ({ ...state, comments: { ...state.comments, [result._id]: result } }));
+        dispatch({
+            type: 'COMMENT_ADD',
+            payload: response,
+            userEmail,
+        });
     };
 
     const isOwner = game._ownerId === userId;
