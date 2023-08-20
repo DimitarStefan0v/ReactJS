@@ -2,7 +2,7 @@ import { useContext } from 'react';
 
 import { Link } from 'react-router-dom';
 
-import { AuthContext } from '../../contexts/authContext';
+import { AuthContext } from '../../contexts/AuthContext';
 import { useForm } from '../../hooks/useForm';
 
 const LoginFormKeys = {

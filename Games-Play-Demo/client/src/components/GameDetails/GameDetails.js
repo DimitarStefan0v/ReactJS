@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import { useService } from '../../hooks/useService';
 
-import { AuthContext } from '../../contexts/authContext';
+import { AuthContext } from '../../contexts/AuthContext';
 
 import { gameServiceFactory } from '../../services/gameService';
 import * as commentService from '../../services/commentService';

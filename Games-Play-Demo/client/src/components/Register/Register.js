@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useForm } from '../../hooks/useForm';
-import { AuthContext } from '../../contexts/authContext';
+import { AuthContext } from '../../contexts/AuthContext';
 
 export const Register = () => {
     const { onRegisterSubmit } = useContext(AuthContext);
