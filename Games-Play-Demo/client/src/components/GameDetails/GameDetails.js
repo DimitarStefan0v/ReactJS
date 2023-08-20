@@ -4,6 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useService } from '../../hooks/useService';
 
 import { AuthContext } from '../../contexts/AuthContext';
+import { useGameContext } from '../../contexts/GameContext';
 
 import { gameServiceFactory } from '../../services/gameService';
 import * as commentService from '../../services/commentService';
@@ -16,6 +17,7 @@ import { AddComment } from './AddComment/AddComment';
 export const GameDetails = () => {
     const { gameId } = useParams();
     const { userId, isAuthenticated, userEmail } = useContext(AuthContext);
+    const { deleteGame } = useGameContext();
     const [game, dispatch] = useReducer(gameReducer, {});
     const gameService = useService(gameServiceFactory);
     const navigate = useNavigate();
@@ -49,11 +51,18 @@ export const GameDetails = () => {
     const isOwner = game._ownerId === userId;
 
     const onDeleteClick = async () => {
-        await gameService.delete(game._id);
+        // eslint-disable-next-line no-restricted-globals
+        const confirmation = confirm(`Are you sure you want to delete ${game.title}?`);
 
-        // TODO: delete from state
+        if (confirmation) {
+            await gameService.delete(game._id);
+                
+            deleteGame(game._id);
 
-        navigate('/catalog');
+            navigate('/catalog');
+        }
+
+        // TODO: delete from gameState
     };
 
     return (

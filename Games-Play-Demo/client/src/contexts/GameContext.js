@@ -36,6 +36,10 @@ export const GameProvider = ({
         navigate(`/catalog/${values._id}`);
     };
 
+    const deleteGame = (gameId) => {
+        setGames(state => state.filter(game => game._id !== gameId));
+    };
+
     const getGame = (gameId) => {
         return games.find(game => game._id === gameId);
     };
@@ -44,6 +48,7 @@ export const GameProvider = ({
         games,
         onCreateGameSubmit,
         onGameEditSubmit,
+        deleteGame,
         getGame,
     }
 
