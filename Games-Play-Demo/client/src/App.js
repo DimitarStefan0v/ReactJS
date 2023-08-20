@@ -16,6 +16,7 @@ import { CreateGame } from './components/CreateGame/CreateGame';
 import { Catalog } from './components/Catalog/Catalog';
 import { GameDetails } from './components/GameDetails/GameDetails';
 import { EditGame } from './components/EditGame/EditGame';
+import { RouteGuard } from './components/common/RouteGuard';
 
 function App() {
     const navigate = useNavigate();
@@ -55,11 +56,15 @@ function App() {
                         <Route path='/' element={<Home />} />
                         <Route path='/login' element={<Login />} />
                         <Route path='/register' element={<Register />} />
-                        <Route path='/logout' element={<Logout />} />
-                        <Route path='/create-game' element={<CreateGame onCreateGameSubmit={onCreateGameSubmit} />} />
                         <Route path='/catalog' element={<Catalog games={games} />} />
                         <Route path='/catalog/:gameId' element={<GameDetails />} />
-                        <Route path='/catalog/:gameId/edit' element={<EditGame onGameEditSubmit={onGameEditSubmit} />} />
+
+                        {/* Route Guards */}
+                        <Route element={<RouteGuard />}>
+                            <Route path='/create-game' element={<CreateGame onCreateGameSubmit={onCreateGameSubmit} />} />
+                            <Route path='/catalog/:gameId/edit' element={<EditGame onGameEditSubmit={onGameEditSubmit} />} />
+                            <Route path='/logout' element={<Logout />} />
+                        </Route>
                     </Routes>
                 </main>
             </div>
